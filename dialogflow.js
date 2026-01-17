@@ -291,6 +291,10 @@ Reply with **"Register"** or **"I want to enroll in [course name]"** to start yo
     }
 });
 
-webApp.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}   →   http://localhost:${PORT}/`);
-});
+if (require.main === module) {
+    webApp.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}   →   http://localhost:${PORT}/`);
+    });
+}
+
+module.exports = webApp;
