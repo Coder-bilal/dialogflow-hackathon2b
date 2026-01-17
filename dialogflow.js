@@ -25,8 +25,8 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false,
     auth: {
-        user: "bilal317699@gmail.com",
-        pass: "khrc vion ltiv hdvi",
+        user: process.env.GMAIL_USER || "bilal317699@gmail.com", // Fallback for testing, but setup Env Var in Vercel
+        pass: process.env.GMAIL_PASS || "khrc vion ltiv hdvi",
     },
 });
 
@@ -104,7 +104,9 @@ webApp.get('/', (req, res) => {
 // ────────────────────────────────────────────────
 webApp.post('/dialogflow', async (req, res) => {
 
-    var id = (res.req.body.session).substr(43);
+    // Safe Session ID Parsing for Vercel & Dialogflow
+    const session = req.body.session || '';
+    const id = session.split('/').pop() || 'unknown';
     console.log(`Session ID: ${id}`);
 
     const agent = new WebhookClient({
@@ -291,10 +293,6 @@ Reply with **"Register"** or **"I want to enroll in [course name]"** to start yo
     }
 });
 
-if (require.main === module) {
-    webApp.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}   →   http://localhost:${PORT}/`);
-    });
-}
-
-module.exports = webApp;
+webApp.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}   →   http://localhost:${PORT}/`);
+});
